@@ -1,0 +1,22 @@
+node_modules
+.DS_Store
+logs/
+*.log
+coverage/
+.idea/
+.vscode/
+combined.log
+error.log
+
+# dotenv environment variable files
+*.env
+.env
+.env.prod
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+.env.local
+swagger
+# Build
+dist
