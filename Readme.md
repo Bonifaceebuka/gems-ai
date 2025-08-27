@@ -4,6 +4,14 @@ This RESTful API service that powers GEMS AI.
 
 ---
 
+## Implemented Features
+
+- User registration and login for admin user
+- Customer creation by chatting an AI
+- Viewing the list of the created customers
+- Manual creation of customers by form submission
+
+
 ## 🛠️ Tech Stack
 
 - **Node.js**
@@ -36,7 +44,7 @@ npm run dev
 The Swagger documentation can be found on http://localhost:2031/swagger/api
 ```
 ### NOTE
-- Please to be able to see the Swagger DOC, set your `PORT` value on your `.env` file to `2031` or change `"servers":["localhost:2031"]` to have your chosen `PORT` number.
+- Please to be able to see the Swagger DOC, set your `PORT` value on your `.env` file to `2031` or change `"servers":["localhost:2031"]` at line 20 of tsoa.json file that can be found at the root of the project to have your chosen `PORT` number.
 
 
 ### To Startup Ollama locally
