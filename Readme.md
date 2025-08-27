@@ -39,12 +39,14 @@ cd gems-ai
 cp .env.example .env
 npm install
 npm run migration:run
+ollama run mistral
 npm run dev
 
 The Swagger documentation can be found on http://localhost:2031/swagger/api
 ```
 ### NOTE
 - Please to be able to see the Swagger DOC, set your `PORT` value on your `.env` file to `2031` or change `"servers":["localhost:2031"]` at line 20 of tsoa.json file that can be found at the root of the project to have your chosen `PORT` number.
+- Ensure that you have your Ollama server running before you make an AI call to `POST /api/assistant`
 
 
 ### To Startup Ollama locally
