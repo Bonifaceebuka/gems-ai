@@ -23,23 +23,27 @@ export default class LLMService {
         await this.storeConversation(
             message, 
             CHAT_MESSAGE_SENDER_TYPE.USER,
+            CHAT_MESSAGE_SENDER_TYPE.BOT,
             {},
             staff_id
         );
 
         logger.debug("User chat saved successfully")
-        const airesponse = await this.getAIResponse(composedPrompt, systemMessage);
+        let aiResponse = await this.getAIResponse(composedPrompt, systemMessage);
+        aiResponse = JSON.parse(aiResponse);
 
+        console.log({aiResponse})
         await this.storeConversation(
-            message, 
+            aiResponse?.message, 
+            CHAT_MESSAGE_SENDER_TYPE.BOT,
             CHAT_MESSAGE_SENDER_TYPE.USER,
-            ...airesponse,
+            aiResponse,
             undefined,
             staff_id
         )
         logger.debug("AI chat response saved successfully")
 
-        return airesponse
+        return aiResponse
    }
 
      async getAIResponse(
@@ -78,6 +82,7 @@ export default class LLMService {
   public async storeConversation(
     message_body: string,
     senderType: CHAT_MESSAGE_SENDER_TYPE,
+    receiver_type?: CHAT_MESSAGE_SENDER_TYPE,
     metadata?: any,
     sender_id?: number,
     receiver_id?: number,
@@ -88,7 +93,10 @@ export default class LLMService {
         sender_id,
         receiver_id,
         sender_type: senderType,
-        metadata
+        receiver_type,
+        metadata:{
+            ...metadata
+        }
       });
 
       logger.info("Chat message successfully added!");
