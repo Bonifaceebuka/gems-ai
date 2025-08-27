@@ -32,7 +32,6 @@ export default class LLMService {
         let aiResponse = await this.getAIResponse(composedPrompt, systemMessage);
         aiResponse = JSON.parse(aiResponse);
 
-        console.log({aiResponse})
         await this.storeConversation(
             aiResponse?.message, 
             CHAT_MESSAGE_SENDER_TYPE.BOT,
