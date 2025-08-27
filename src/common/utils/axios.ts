@@ -17,7 +17,7 @@ export const makeApiCall = async (
         params: options.params,
         data: options.data,
         headers: options.headers,
-        timeout: 10000,
+        // timeout: 60000,
       })
   
       return res.data

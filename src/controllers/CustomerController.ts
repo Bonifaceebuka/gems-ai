@@ -6,10 +6,10 @@ import { AppError } from '../common/errors/AppError';
 import { logger } from '../common/configs/logger';
 import { CUSTOMER_MESSAGES, MESSAGES } from '../common/constants/messages';
 import CustomerService from '@/services/CustomerService';
-import { createCustomerDto } from '../common/dtos/Customer.dto';
+import { createCustomerByAiDto, createCustomerDto } from '../common/dtos/Customer.dto';
 
 @Tags("Customers")
-@Route("api/customers")
+@Route("api")
 @Security("bearerAuth")
 @Service()
 export class CustomerController extends Controller {
@@ -20,10 +20,13 @@ export class CustomerController extends Controller {
     this.customerService = new CustomerService();
   }
 
-  @Post("/")
-  public async createCustomer(
+  /**
+   * Endpoint for creating new customers by chatting GEMS AI
+   */
+  @Post("/assistant")
+  public async createCustomerWithAi(
     @Request() req: any,
-    @Body() customerData: createCustomerDto 
+    @Body() customerData: createCustomerByAiDto 
   ): Promise<HttpResponseDTO> {
     try {
       const { user_id: staff_id } = req.auth_user_details;
@@ -31,15 +34,15 @@ export class CustomerController extends Controller {
 
       console.log({staff_id})
 
-      const newCustomer = await this.customerService.createCustomer(
+      const newCustomer = await this.customerService.createCustomerByAi(
         staff_id,
         customerData
       );
       if (newCustomer.successful) {
         message = newCustomer.message;
         logger.info(message);
-        this.setStatus(200);
-        return successResponse(message as string, newCustomer.data);
+        this.setStatus(201);
+        return successResponse(message as string, newCustomer.data, 201);
       } else {
         message = CUSTOMER_MESSAGES.ACCOUNT.CUSTOMER_ACCOUNT_CREATION_FAILED;
         this.setStatus(400);
@@ -60,7 +63,53 @@ export class CustomerController extends Controller {
     }
   }
 
-  @Get("/")
+  /**
+   * Endpoint for creating new customers by via form submission
+   */
+  @Post("/customers")
+  public async createCustomer(
+    @Request() req: any,
+    @Body() customerData: createCustomerDto 
+  ): Promise<HttpResponseDTO> {
+    try {
+      const { user_id: staff_id } = req.auth_user_details;
+      let message = null;
+
+      console.log({staff_id})
+
+      const newCustomer = await this.customerService.createCustomer(
+        staff_id,
+        customerData
+      );
+      if (newCustomer.successful) {
+        message = newCustomer.message;
+        logger.info(message);
+        this.setStatus(201);
+        return successResponse(message as string, newCustomer.data, 201);
+      } else {
+        message = CUSTOMER_MESSAGES.ACCOUNT.CUSTOMER_ACCOUNT_CREATION_FAILED;
+        this.setStatus(400);
+        return errorResponse(message, newCustomer.successful);
+      }
+    } catch (error: any) {
+      logger.info(error.message);
+      if (
+        error instanceof AppError &&
+        error.statusCode &&
+        error.statusCode >= 400 &&
+        error.statusCode < 500
+      ) {
+        this.setStatus(400);
+        return errorResponse(error.message);
+      }
+      return serverErrorResponse(MESSAGES.COMMON.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Endpoint for fetching created custromers
+   */
+  @Get("/customers")
   public async fetchCustomers(
     @Query() page_number?: number
   ): Promise<HttpResponseDTO> {

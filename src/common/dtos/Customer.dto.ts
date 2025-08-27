@@ -20,3 +20,11 @@ export class createCustomerDto {
     @Example("Falaye")
     customer_phone!: string;
 }
+
+export class createCustomerByAiDto {
+    @IsString({ 
+        message: "Message body is required",
+    })
+    @Example("I need you to create a new customer details for me")
+    message_body!: string;
+}

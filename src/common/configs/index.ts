@@ -15,6 +15,9 @@ enum EnvironmentKeys {
     PG_USERNAME = 'PG_USERNAME',
     PG_DATABASE = 'PG_DATABASE',
     PG_PASSWORD = 'PG_PASSWORD',
+
+    LLM_MODEL = 'LLM_MODEL',
+    LLM_URL = 'LLM_URL',
 }
 
 export function getEnv(key: EnvironmentKeys): string {
@@ -44,6 +47,10 @@ export const CONFIGS = {
     STATELESS_EXPIRES_IN: "3600s",
     REFRESH_JWT_SECRET: getEnv(EnvironmentKeys.REFRESH_JWT_SECRET),
     JWT_ISSUER: getEnv(EnvironmentKeys.JWT_ISSUER),
+  },
+  LLM:{
+    DEFAULT_MODEL: getEnv(EnvironmentKeys.LLM_MODEL),
+    DEFAULT_MODEL_URL: getEnv(EnvironmentKeys.LLM_URL)
   },
   DATABASE: {
     HOST: getEnv(EnvironmentKeys.PG_HOST),
