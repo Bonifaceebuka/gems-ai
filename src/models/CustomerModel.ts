@@ -1,23 +1,22 @@
-import { Column, Entity, Index, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne} from "typeorm";
 import { BaseModel } from "./BaseModel";
+import UserModel from "./UserModel";
 
 @Entity({ name: "customers" })
 export default class CustomerModel extends BaseModel {
-    @Column({nullable: true})
-    company_name?: string;
-
-    @Column({nullable: true})
-    phone?: string;
-
-    @Column({unique: true,nullable: true})
-    email?: string;
-
-    @Column({nullable: true})
-    guest_id?: string;
+    @Column()
+    customer_name!: string;
 
     @Column()
-    shop_id!: number;
+    customer_phone!: string;
 
-    @Column({unique: true, nullable: true})
-    store_issued_uuid?: string;
+    @Column({unique: true})
+    email!: string;
+
+    @Column()
+    created_by!: number;
+
+    @ManyToOne (() => UserModel, (user)=>user.created_customers)
+    @JoinColumn({ name: 'created_by', referencedColumnName: 'id'})
+    staff!: UserModel;
 }

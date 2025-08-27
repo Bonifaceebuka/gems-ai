@@ -35,7 +35,6 @@
         "swagger-ui-express": "^5.0.1",
         "tsoa": "^6.6.0",
         "typeorm": "^0.3.21",
-        "uuidv4": "^6.2.13",
         "winston": "^3.17.0",
         "winston-daily-rotate-file": "^5.0.0"
     },

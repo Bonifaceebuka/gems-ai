@@ -1,11 +1,11 @@
 import CustomerModel from '@models/CustomerModel';
 export class CustomerResource {
-  static MessagesToJSON(customer: CustomerModel) {
-    const { email, created_at } = customer;
+  static toJSON(customer: CustomerModel) {
+    const { email, created_at, customer_name, customer_phone } = customer;
     return {
       email,
-      full_name: "Guest",
-      is_registered: false,
+      customer_phone,
+      customer_name,
       joined: created_at,
     };
   }

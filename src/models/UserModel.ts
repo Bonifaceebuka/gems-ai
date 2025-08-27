@@ -1,6 +1,7 @@
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { BaseModel } from "./BaseModel";
 import { UserStatus, UserTypes } from "../common/enums/UserEnums";
+import CustomerModel from "./CustomerModel";
 
 @Entity({ name: "users" })
 export default class UserModel extends BaseModel {
@@ -45,4 +46,7 @@ export default class UserModel extends BaseModel {
         default: UserStatus.PENDING
     })
     user_status!: UserStatus;
+
+    @OneToMany(() => CustomerModel, (shop)=>shop.staff)
+    created_customers!: CustomerModel[];
 }

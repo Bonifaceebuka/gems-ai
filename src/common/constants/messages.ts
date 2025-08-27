@@ -24,6 +24,8 @@ export const CUSTOMER_MESSAGES = {
     INACTIVE_ACCOUNT: "Customer account is inactive. Please contact support",
     DISABLED_ACCOUNT: "Customer account is disabled. Please contact support",
     CUSTOMER_ACCOUNT_FETCHED: "Customer account info was fetched!",
+    CUSTOMER_ACCOUNT_CREATED: "Customer account successfully created!",
+    CUSTOMER_ACCOUNT_CREATION_FAILED: "Customer account creation failed!",
   },
   AUTH: {
     LOGIN: {

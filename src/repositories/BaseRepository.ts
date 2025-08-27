@@ -22,11 +22,6 @@ export class BaseRepository<T extends ObjectLiteral> {
     return this.repository.save(entity);
   }
 
-  async bathCreate(data: Partial<T[]>): Promise<void> {
-    const entity = this.repository.create(data as DeepPartial<T[]>);
-    await this.repository.save(entity);
-  }
-
   async basicFindOneByConditions(
     conditions: FindOptionsWhere<T>
   ): Promise<T | null> {
@@ -43,41 +38,6 @@ export class BaseRepository<T extends ObjectLiteral> {
     } as FindOneOptions<T>);
   }
 
-  async findOneByConditions(
-    conditions: FindOptionsWhere<T>,
-    order: "DESC" | "ASC" = "DESC",
-    orderBy: keyof T
-  ): Promise<T | null> {
-    return this.repository.findOne({
-      where: conditions,
-      order: { [orderBy as string]: order },
-    } as FindOneOptions<T>);
-  }
-
-  async findAll(options: FindManyOptions<T>): Promise<T[]> {
-    return this.repository.find(options);
-  }
-
-  async countAll(): Promise<number> {
-    return this.repository.count();
-  }
-
-  async findInChunks(options: FindManyOptions<T>): Promise<T[]> {
-    return this.repository.find(options);
-  }
-
-  async updateOne(where: Partial<T>, updates: Partial<T>): Promise<void> {
-    await this.repository.update(where, updates);
-  }
-
-  async deleteByCondition(conditions: FindOptionsWhere<T>): Promise<void> {
-    await this.repository.delete(conditions);
-  }
-
-  async save(data: Partial<T>): Promise<T> {
-    return this.repository.save(data as DeepPartial<T>);
-  }
-
   getRepo(): Repository<T> {
     return this.repository;
   }
@@ -88,5 +48,27 @@ export class BaseRepository<T extends ObjectLiteral> {
 
   async findOneAndRelations(options: FindOneOptions<T>): Promise<T | null> {
     return this.repository.findOne(options);
+  }
+
+  async getPagedData(
+    baseQuery: string,
+    countQuery: string,
+    limit: number,
+    page: number
+  ) {
+    const data = await this.repository.query(
+      `${baseQuery} LIMIT $1 OFFSET $2`,
+      [page, limit]
+    );
+
+    const countRes = await this.repository.query(countQuery);
+    const total = parseInt(countRes[0]?.count ?? 0);
+
+    return {
+      data,
+      total,
+      perPage: page,
+      page_count: Math.ceil(total / page),
+    };
   }
 }

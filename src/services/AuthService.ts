@@ -12,74 +12,72 @@ import { UserResource } from "../transformers/resources/UserResource";
 
 @Service()
 export default class AuthService {
-    private userRepository: UserRepository;
-    constructor() {
-        this.userRepository = new UserRepository();
+  private userRepository: UserRepository;
+  constructor() {
+    this.userRepository = new UserRepository();
+  }
+
+  public async registerUser(req: authUserDto): Promise<ServiceResponseDTO> {
+    const { email, password, first_name, last_name } = req;
+    let whereConditions = {
+      email
+    }
+    let message = null;
+    const existingMerchant = await this.userRepository.basicFindOneByConditions(whereConditions);
+    if (existingMerchant) {
+      message = MESSAGES.COMMON.EMAIL_EXISTS;
+      throw new AppError(message);
     }
 
-    public async registerUser(req: authUserDto): Promise<ServiceResponseDTO> 
-    {
-        const { email, password, first_name, last_name } = req;
-        let whereConditions = {
-            email
-        }
-        let message = null;
-        const existingMerchant = await this.userRepository.basicFindOneByConditions(whereConditions);
-        if (existingMerchant) {
-            message = MESSAGES.COMMON.EMAIL_EXISTS;
-            throw new AppError(message);
-        }
+    const hashedPassword = await hashString(password);
+    const { otp, expireAt: otp_expires_at } = generateOTP(30);
+    const { uuid, expiresAt } = generateUUID();
 
-        const hashedPassword = await hashString(password);
-        const {otp, expireAt:otp_expires_at} = generateOTP(30);
-        const {uuid, expiresAt} = generateUUID();
-        
-        const user = await this.userRepository.create({ email, first_name, last_name, otp, otp_expires_at, verification_token: uuid, verified_at: expiresAt, password: hashedPassword });
+    const user = await this.userRepository.create({ email, first_name, last_name, otp, otp_expires_at, verification_token: uuid, verified_at: expiresAt, password: hashedPassword });
 
-        message = CUSTOMER_MESSAGES.AUTH.REGISTRATION.SUCCESSFUL;
+    message = CUSTOMER_MESSAGES.AUTH.REGISTRATION.SUCCESSFUL;
 
-        const jwtDetails = generateJWT({email: user.email, user_id: user.id},'USER');
+    const jwtDetails = generateJWT({ email: user.email, user_id: user.id }, 'USER');
 
-        return { successful: true, data: {user, jwtDetails}, message };
+    return { successful: true, data: { user: UserResource.toJSON(user), jwtDetails }, message };
+  }
+
+  public async loginUser(req: loginUserDto): Promise<{ isSuccess: boolean, message?: string, data?: any }> {
+    const { email, password } = req;
+
+    const existingUser = await this.userRepository.findOneAndRelations({
+      where: { email }
+    });
+    if (!existingUser) {
+      throw new AppError(CUSTOMER_MESSAGES.ACCOUNT.INVALID_CREDENTIALS)
     }
 
-    public async loginUser(req: loginUserDto): Promise<{ isSuccess: boolean, message?: string, data?: any }> {
-        const { email, password } = req;
-
-        const existingUser = await this.userRepository.findOneAndRelations({
-            where: { email },
-            relations: ['shops'],
-          });
-        if (!existingUser) {
-            throw new AppError(CUSTOMER_MESSAGES.ACCOUNT.INVALID_CREDENTIALS)
-        }
-
-        const isPasswordCheckOK = await compareHash(password, existingUser.password);
-        if (!isPasswordCheckOK) {
-            throw new AppError(CUSTOMER_MESSAGES.ACCOUNT.INVALID_CREDENTIALS) 
-            }
-
-        const jwtSignature = {email:existingUser.email, user_id:existingUser.id};
-       const jwtDetails = {
-            jwt_token: generateJWT(jwtSignature, 'USER'),
-            refresh_jwt_token: generateRefreshToken(jwtSignature),
-        };
-        logger.debug(CUSTOMER_MESSAGES.AUTH.LOGIN.JWT_GENERATED)
-
-        return {
-          isSuccess: true,
-          data:{
-            user: UserResource.toJSON(existingUser),
-          token: jwtDetails,
-          },
-          message: CUSTOMER_MESSAGES.AUTH.LOGIN.LOGIN_SUCCESSFUL,
-        };
+    const isPasswordCheckOK = await compareHash(password, existingUser.password);
+    if (!isPasswordCheckOK) {
+      throw new AppError(CUSTOMER_MESSAGES.ACCOUNT.INVALID_CREDENTIALS)
     }
 
-     public async getRefreshToken(
+    const jwtSignature = { email: existingUser.email, user_id: existingUser.id };
+    const jwtDetails = {
+      jwt_token: generateJWT(jwtSignature, 'USER'),
+      refresh_jwt_token: generateRefreshToken(jwtSignature),
+    };
+    logger.debug(CUSTOMER_MESSAGES.AUTH.LOGIN.JWT_GENERATED)
+
+    return {
+      isSuccess: true,
+      data: {
+        user: UserResource.toJSON(existingUser),
+        token: jwtDetails,
+      },
+      message: CUSTOMER_MESSAGES.AUTH.LOGIN.LOGIN_SUCCESSFUL,
+    };
+  }
+
+  public async getRefreshToken(
     req: CustomerTokenRefreshDTO
   ): Promise<ServiceResponseDTO | AppError> {
-      const { refresh_jwt_token } = req;
+    const { refresh_jwt_token } = req;
 
     let message = null;
     let jwtSignature;
@@ -98,7 +96,7 @@ export default class AuthService {
             return new AppError("Invalid token!", 403);
           }
           jwtSignature = decoded.jwtData;
-          console.log({jwtSignature})
+          console.log({ jwtSignature })
         }
       );
 

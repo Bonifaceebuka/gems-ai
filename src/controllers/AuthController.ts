@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { Tags, Route, Controller, Post, Body, Path, Put, Response, SuccessResponse } from 'tsoa';
+import { Tags, Route, Controller, Post, Body, Put} from 'tsoa';
 import { HttpResponseDTO } from '../common/types/HttpType';
 import { errorResponse, serverErrorResponse, successResponse } from '../common/utils/responseHandlers';
 import AuthService from '../services/AuthService';
@@ -9,7 +9,7 @@ import { logger } from '../common/configs/logger';
 import { CUSTOMER_MESSAGES, MESSAGES } from '../common/constants/messages';
 
 @Tags("Auth")
-@Route("auth")
+@Route("api/auth")
 @Service()
 export class AuthController extends Controller {
     constructor(
@@ -18,6 +18,9 @@ export class AuthController extends Controller {
         super()
     }
 
+    /**
+     * User registration endpoint
+     */
     @Post("/register")
     public async registerUser(
         @Body() req: authUserDto
@@ -47,6 +50,9 @@ export class AuthController extends Controller {
 
     }
 
+    /**
+     * User login endpoint
+     */
     @Post("/login")
     public async login(@Body() req: loginUserDto)
         : Promise<HttpResponseDTO>
@@ -78,6 +84,9 @@ export class AuthController extends Controller {
         }
     }
 
+    /**
+     * User JWT refresh endpoint
+     */
     @Put("/refresh-token")
     public async merchantRefreshToken(
         @Body() refresh_jwt_token: CustomerTokenRefreshDTO
