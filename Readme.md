@@ -11,6 +11,7 @@ This RESTful API service that powers GEMS AI.
 - **Postgres** with **TypeORM**
 - **Swagger UI** with **TSOA**
 - **Dotenv**
+- **Ollma** with **mistral:latest**
 - **Nodemon** for development
 
 ---
@@ -22,7 +23,7 @@ This RESTful API service that powers GEMS AI.
 - [Supabase (Postrges + Vector Embeddings)](https://supabase.com/docs/guides/ai)
 - [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
 
-### Installation
+### Installation & Setup
 
 ```bash
 git clone https://github.com/Bonifaceebuka/gems-ai.git
@@ -31,3 +32,21 @@ cp .env.example .env
 npm install
 npm run migration:run
 npm run dev
+
+The Swagger documentation can be found on http://localhost:2031/swagger/api
+```
+### NOTE
+- Please to be able to see the Swagger DOC, set your `PORT` value on your `.env` file to `2031` or change `"servers":["localhost:2031"]` to have your chosen `PORT` number.
+
+
+### To Startup Ollama locally
+
+- If you already have Ollama setup for your PC and `mistral:lastest` follow option 2, else, use option 1
+
+#### OPTION 1
+
+- Download Ollama for your Operating frim - https://ollama.com/download if you don't have it already setup on your PC
+- Install and run `mistral:lastest` model from ollama with this command - `ollama run mistral`, If you don't already have it installed.
+
+#### OPTION 2
+- Open your terminal and run `ollama run mistral`

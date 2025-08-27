@@ -32,8 +32,6 @@ export class CustomerController extends Controller {
       const { user_id: staff_id } = req.auth_user_details;
       let message = null;
 
-      console.log({staff_id})
-
       const newCustomer = await this.customerService.createCustomerByAi(
         staff_id,
         customerData
@@ -74,8 +72,6 @@ export class CustomerController extends Controller {
     try {
       const { user_id: staff_id } = req.auth_user_details;
       let message = null;
-
-      console.log({staff_id})
 
       const newCustomer = await this.customerService.createCustomer(
         staff_id,

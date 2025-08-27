@@ -48,7 +48,7 @@ export default class CustomerService {
     else {
       previousConversations
     }
-    let aiResponse = await this.lLMService.getIntent(previousConversations, message_body)
+    let aiResponse = await this.lLMService.getIntent(staff_id,previousConversations, message_body)
     aiResponse = JSON.parse(aiResponse);
 
     if (aiResponse?.intent
